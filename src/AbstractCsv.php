@@ -248,32 +248,6 @@ abstract class AbstractCsv implements ByteSequence
     }
 
     /**
-     * Retuns the CSV document as a Generator of string chunk.
-     *
-     * @param int $length number of bytes read
-     *
-     * @throws Exception if the number of bytes is lesser than 1
-     */
-    public function chunk(int $length): Generator
-    {
-        if ($length < 1) {
-            throw new Exception(sprintf('%s() expects the length to be a positive integer %d given', __METHOD__, $length));
-        }
-
-        $input_bom = $this->getInputBOM();
-        $this->document->rewind();
-        $this->document->setFlags(0);
-        $this->document->fseek(strlen($input_bom));
-        foreach (str_split($this->output_bom.$this->document->fread($length), $length) as $chunk) {
-            yield $chunk;
-        }
-
-        while ($this->document->valid()) {
-            yield $this->document->fread($length);
-        }
-    }
-
-    /**
      * DEPRECATION WARNING! This method will be removed in the next major point release.
      *
      * @deprecated deprecated since version 9.1.0
@@ -297,6 +271,32 @@ abstract class AbstractCsv implements ByteSequence
         }
 
         return $raw;
+    }
+
+    /**
+     * Retuns the CSV document as a Generator of string chunk.
+     *
+     * @param int $length number of bytes read
+     *
+     * @throws Exception if the number of bytes is lesser than 1
+     */
+    public function chunk(int $length): Generator
+    {
+        if ($length < 1) {
+            throw new Exception(sprintf('%s() expects the length to be a positive integer %d given', __METHOD__, $length));
+        }
+
+        $input_bom = $this->getInputBOM();
+        $this->document->rewind();
+        $this->document->setFlags(0);
+        $this->document->fseek(strlen($input_bom));
+        foreach (str_split($this->output_bom.$this->document->fread($length), $length) as $chunk) {
+            yield $chunk;
+        }
+
+        while ($this->document->valid()) {
+            yield $this->document->fread($length);
+        }
     }
 
     /**
